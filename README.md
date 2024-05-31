@@ -39,7 +39,10 @@ __Crazy stat: By saving 10% of the doctor's time, we could potentially save time
 - Week 6: Frontend
 - week 7&8: Dev & Demo
 
-## Milestone and progress (Continuing)
+## Cost Analysis
+We control the cost for most APIs under the free tier or $10 US dollars for each. For the cloud service we use in this project, we tentatively set the budgets around $20 US dollars for each. It is each to scale due to the pay-as-you-use nature of the cloud.
+
+## Milestone and Technical Details (Continuing)
 
 ### User Info Desensitization
 By utizling Lambda functions with python NLTK packages to omit users sensitive infomation and then store them into the AWS S3 buckets, which results the following benefits:
