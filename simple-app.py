@@ -127,7 +127,7 @@ s3_client = boto3.client(
 # PINECONE
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
 pc = Pinecone(api_key=PINECONE_API_KEY)
-index_name = "drugbank"
+index_name = "healthcare-ai"
 openai.api_key = OPENAI_API_KEY
 
 # Set up LangChain objects
