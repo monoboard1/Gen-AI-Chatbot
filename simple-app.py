@@ -27,7 +27,10 @@ warnings.filterwarnings("ignore")
 st.set_page_config(page_title="Jarvis", layout="wide")
 st.markdown("<h1 style='text-align: center; color: red;'>Jarvis Healthcare V1.0</h1>", unsafe_allow_html=True)
 st.logo("Images/Jarvis.png")
-st.image("Images/Jarvis_main.png")
+left_co, cent_co,last_co = st.columns(3)
+with cent_co:
+    st.image("Images/Jarvis_main.png")
+# st.image("Images/Jarvis_main.png")
 
 # Setu up secrets & necessary objeccts
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
