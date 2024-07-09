@@ -174,12 +174,12 @@ st.sidebar.caption("To help us improve our services and better support you and o
                    Rest assured, all sensitive information will be desensitized before being stored in our database, ensuring your privacy and security.")
 st.sidebar.caption("Thank you for helping us make Javris better for everyone!")
 
-if st.sidebar.button("Help us"):
+if st.sidebar.button("Help Us Improve"):
     chat_history_text = save_chat_history(st.session_state["messages"])
     file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
     upload_to_s3(file_obj, bucket_name, st.secrets["aws"],chat_history_key)
 
-st.sidebar.download_button(label = "Download the session", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
+st.sidebar.download_button(label = "Download the Chat", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
 # Display chat messages from history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
