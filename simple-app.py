@@ -166,7 +166,7 @@ file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
 
 st.markdown(
     """<style>
-    div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {font-size: 40px;}
+    div[class*="stSidebar"] > label > div[data-testid="stMarkdownContainer"] > p {font-size: 40px;}
     </style>
     """, unsafe_allow_html=True)
 
