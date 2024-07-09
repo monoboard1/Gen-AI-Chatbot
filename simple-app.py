@@ -23,6 +23,7 @@ from langchain_core.runnables import RunnablePassthrough
 warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
+st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
 st.set_page_config(page_title="Jarvis", layout="wide")
 st.title("Jarvis Healthcare V1.0")
 st.logo("Images/Jarvis.png")
