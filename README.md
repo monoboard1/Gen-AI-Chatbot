@@ -31,6 +31,7 @@ __Crazy stat: By saving 10% of the doctor's time, we could potentially save time
 ## Workflow V2.0
 <center><img src="Images/workflow.png" alt="drawing" style="width:600px;"/></center>
 
+
 ## TimeLine
 - Week 1 & 2: Design stage
 - Week 3: Data Collection
@@ -73,4 +74,8 @@ For this milestone, we use various APIs to build a very basic chatbot. APIs incl
 
 More than that, to enhance the overall performance, we utlize the LangChain framework to solve the limitations and provide basic components and connections.
 
-### Continuing...
+### Frontend
+This project showcases an interactive chatbot developed using Streamlit for the frontend and enhanced with custom CSS for a polished and user-friendly interface. The chatbot is designed to provide seamless interactions, leveraging the capabilities of Streamlit to create a dynamic and responsive user experience.
+
+### User Input Extraction
+Extract keywords from user input(desensitized) and then feed those data to data analysis and sencise team to either enrich the database or train the model.
