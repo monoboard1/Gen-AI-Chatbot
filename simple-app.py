@@ -186,7 +186,7 @@ if st.sidebar.button("Help Us Improve"):
 st.sidebar.download_button(label = "Download the Chat", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
 st.sidebar.caption(f"""
         <div style='display: flex; align-items: center;'>
-            <a href = 'https://www.linkedin.com/in/xin-wang-4522091a9/'><img src='{linkedin}' style='width: 35px; height: 35px; margin-right: 25px;'></a>    
+            <a href = 'https://www.linkedin.com/in/xin-wang-4522091a9/'></a>    
         </div>       
         """,
     unsafe_allow_html=True,)
