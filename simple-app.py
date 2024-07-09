@@ -184,12 +184,8 @@ if st.sidebar.button("Help Us Improve"):
     upload_to_s3(file_obj, bucket_name, st.secrets["aws"],chat_history_key)
 
 st.sidebar.download_button(label = "Download the Chat", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
-st.sidebar.caption(f"""
-        <div style='display: flex; align-items: center;'>
-            <a href = 'https://www.linkedin.com/in/xin-wang-4522091a9/'></a>    
-        </div>       
-        """,
-    unsafe_allow_html=True,)
+st.sidebar.caption("Author: Xin Wang")
+st.sidebar.caption("LinkedIn: https://www.linkedin.com/in/xin-wang-4522091a9/")
 # Display chat messages from history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
