@@ -25,8 +25,7 @@ warnings.filterwarnings("ignore")
 # Set up Streamlit app
 
 st.set_page_config(page_title="Jarvis", layout="wide")
-st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
-st.title("Jarvis Healthcare V1.0")
+st.markdown("<h1 style='text-align: center; color: red;'>Jarvis Healthcare V1.0</h1>", unsafe_allow_html=True)
 st.logo("Images/Jarvis.png")
 st.image("Images/Jarvis_main.png")
 
