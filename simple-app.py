@@ -164,6 +164,13 @@ bucket_name = "demo-chat-history-xin"
 chat_history_text = save_chat_history(st.session_state["messages"])
 file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
 
+st.markdown(
+    """<style>
+div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+    font-size: 20px;
+}
+    </style>
+    """, unsafe_allow_html=True)
 
 st.sidebar.title("Welcome!")
 st.sidebar.caption("Welcome to Javris, your personal healthcare chatbot! We're here to assist you with all your healthcare needs, \
