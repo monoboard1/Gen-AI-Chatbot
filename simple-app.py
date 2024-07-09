@@ -26,6 +26,7 @@ warnings.filterwarnings("ignore")
 st.set_page_config(page_title="Jarvis", layout="wide")
 st.title("Jarvis Healthcare V1.0")
 st.logo("Images/Jarvis.png")
+st.image("Images/Jarvis_main.png")
 
 # Setu up secrets & necessary objeccts
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
