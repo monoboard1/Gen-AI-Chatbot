@@ -25,7 +25,7 @@ warnings.filterwarnings("ignore")
 # Set up Streamlit app
 
 st.set_page_config(page_title="Jarvis", layout="wide")
-st.markdown("<h1 style='text-align: center; color: red;'>Jarvis Healthcare V1.0</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Jarvis Healthcare V1.0</h1>", unsafe_allow_html=True)
 st.logo("Images/Jarvis.png")
 left_co, cent_co,last_co = st.columns(3)
 with cent_co:
