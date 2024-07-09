@@ -1,15 +1,15 @@
 import streamlit as st
-from langchain_voyageai import VoyageAIEmbeddings
+import uuid
+import warnings
+import io
 import os
 import boto3
+import openai
+from langchain_voyageai import VoyageAIEmbeddings
 from urllib.parse import urlparse
 from pinecone import Pinecone
-import pinecone
 from langchain_openai import ChatOpenAI
-import openai
 from langchain.chains import LLMChain, RetrievalQA
-import time
-import re
 from langchain_pinecone import PineconeVectorStore
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage
@@ -17,15 +17,29 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.chains import ConversationChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-import uuid
-import warnings
+
 
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
-st.set_page_config(page_title="Custom Chatbot", layout="wide")
-st.title("Custom Chatbot with Retrieval Abilities")
+st.set_page_config(page_title="Jarvis", layout="wide")
+st.title("Jarvis Healthcare V1.0")
+
+# Setu up secrets & necessary objeccts
+OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
+VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
+PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
+aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
+aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
+aws_region = st.secrets["aws"]["aws_region"]
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name=aws_region
+)
 
 # Function to generate pre-signed URL
 def generate_presigned_url(s3_uri):
@@ -59,8 +73,9 @@ def retrieve_and_format_response(query, retriever, llm, chat_history):
                Only respond with the information relevant to the user query {query}, \
                if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
                But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. \
-               In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[Download More Info]({s3_gen_url}) \
-               Context: {combined_content} \ History: {chat_history}"
+               In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info Download]({s3_gen_url}) \
+               Context: {combined_content} \
+               Chat History: {chat_history}"
     
     # Originally there were no message
     message = HumanMessage(content=prompt)
@@ -68,45 +83,32 @@ def retrieve_and_format_response(query, retriever, llm, chat_history):
     response = llm([message])
     return response
 
-# Function to save chat history to a file
-def save_chat_history_to_file(filename, history):
-    with open(filename, 'w') as file:
-        file.write(history)
 
-# Function to upload the file to S3
-def upload_file_to_s3(bucket, key, filename):
-    s3_client.upload_file(filename, bucket, key)
 
-def get_chat_history_text(messages):
-    chat_history_text = "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
-    return chat_history_text
+# Function to save chat history to a string
+def save_chat_history(messages):
+    chat_history= "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
+    return chat_history
 
-# Example usage with memory
-# def ask_question(query, chain, llm):
-#     # Retrieve and format the response with pre-signed URLs
-#     response_with_docs = retrieve_and_format_response(query, retriever, llm)
-    
-#     # Add the retrieved response to the memory
-#     memory.save_context({"input": query}, {"output": response_with_docs['answer']})
-    
-#     # Use the conversation chain to get the final response
-#     response = chain.invoke(query)
-#     pattern = r"s3(.*?)(?=json)"
-#     s3_uris = ["s3" + x + "json" for x in re.findall(pattern, response)]
-#     for s3_uri in s3_uris:
-#         final_response = response.replace(s3_uri, generate_presigned_url(s3_uri))
-#     return final_response
+# Function to upload the file(object) to S3
+def upload_to_s3(file, bucket_name, secret_data, key):
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=secret_data["aws_access_key_id"],
+        aws_secret_access_key=secret_data["aws_secret_access_key"],
+        region_name=secret_data["aws_region"]  # Replace with your AWS region
+    )
 
-# Setup - Streamlit secrets
-OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
-VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
-PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
-aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
-aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
-aws_region = st.secrets["aws"]["aws_region"]
+    try:
+        s3.put_object(Body=file, Bucket=bucket_name, Key=key)
+        print(f"File '{file.name}' uploaded to '{bucket_name}'")
+    except Exception as e:
+        print(f'Upload failed: {e}\n')
+
+
 
 # Langchain stuff
-llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
+llm = ChatOpenAI(model="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY)
 
 # Initialize the conversation memory
 memory = ConversationBufferMemory()
@@ -121,13 +123,7 @@ prompt_template = ChatPromptTemplate.from_template(
         Context: {combined_content}"
     )
 
-# Initialize necessary objects (s3 client, Pinecone, OpenAI, etc.)
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key,
-    region_name=aws_region
-)
+# Initialize necessary objects
 # PINECONE
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
 pc = Pinecone(api_key=PINECONE_API_KEY)
@@ -160,11 +156,33 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 
+# Create session and key for saving/pushing chat history
+session_id = str(uuid.uuid4())
+chat_history_key = f"raw-data/chat_history_{session_id}.txt"
+bucket_name = "demo-chat-history-xin"
 
+chat_history_text = save_chat_history(st.session_state["messages"])
+file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
+
+
+st.sidebar.title("Welcome!")
+st.sidebar.caption("Welcome to Javris, your personal healthcare chatbot! We're here to assist you with all your healthcare needs, \
+                   providing accurate and timely information to ensure your well-being.")
+st.sidebar.caption("To help us improve our services and better support you and others, you can choose to upload your chat history. \
+                   Rest assured, all sensitive information will be desensitized before being stored in our database, ensuring your privacy and security.")
+st.sidebar.caption("Thank you for helping us make Javris better for everyone!")
+
+if st.sidebar.button("Help us"):
+    chat_history_text = save_chat_history(st.session_state["messages"])
+    file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
+    upload_to_s3(file_obj, bucket_name, st.secrets["aws"],chat_history_key)
+
+st.sidebar.download_button(label = "Download the session", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
 # Display chat messages from history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+
 
 # Get user input
 user_input = st.chat_input("You: ")
