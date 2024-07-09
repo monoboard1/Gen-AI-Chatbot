@@ -29,7 +29,7 @@ __Crazy stat: By saving 10% of the doctor's time, we could potentially save time
 
 
 ## Workflow V2.0
-<center><img src="Images/workflow.png" alt="drawing" style="width:600px;"/></center>
+<center><img src="Images/work flow.png" alt="drawing" style="width:600px;"/></center>
 
 
 ## TimeLine
