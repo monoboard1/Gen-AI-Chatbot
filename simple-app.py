@@ -166,8 +166,8 @@ file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
 
 
 st.sidebar.title("Welcome!")
-st.sidebar.caption(r"$\textf{\Large Welcome to Javris, your personal healthcare chatbot! We're here to assist you with all your healthcare needs, \
-                   providing accurate and timely information to ensure your well-being.}$")
+st.sidebar.caption("Welcome to Javris, your personal healthcare chatbot! We're here to assist you with all your healthcare needs, \
+                   providing accurate and timely information to ensure your well-being.")
 st.sidebar.caption("To help us improve our services and better support you and others, you can choose to upload your chat history. \
                    Rest assured, all sensitive information will be desensitized before being stored in our database, ensuring your privacy and security.")
 st.sidebar.caption("Thank you for helping us make Javris better for everyone!")
