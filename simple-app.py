@@ -208,7 +208,7 @@ if user_input:
     # Generate and display bot response
     with st.spinner("Thinking..."):
         #chat_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state["messages"]])
-        bot_response = retrieve_and_format_response(user_input, retriever, llm, chat_history).content
+        bot_response = retrieve_and_format_response(user_input, retriever, llm).content
     
     st.session_state["messages"].append({"role": "assistant", "content": bot_response})
     
