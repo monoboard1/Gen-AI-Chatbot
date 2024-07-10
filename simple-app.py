@@ -23,14 +23,14 @@ from langchain_core.runnables import RunnablePassthrough
 warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
-
 st.set_page_config(page_title="Jarvis", layout="wide")
 st.markdown("<h1 style='text-align: center;'>Jarvis Healthcare V1.0</h1>", unsafe_allow_html=True)
 st.logo("Images/Jarvis.png")
 left_co, cent_co,last_co = st.columns(3)
 with cent_co:
     st.image("Images/Jarvis_main.png")
-# st.image("Images/Jarvis_main.png")
+
+
 
 # Setu up secrets & necessary objeccts
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
@@ -60,7 +60,7 @@ def generate_presigned_url(s3_uri):
     return presigned_url
 
 # Function to retrieve documents, generate URLs, and format the response
-def retrieve_and_format_response(query, retriever, llm, chat_history):
+def retrieve_and_format_response(query, retriever, llm):    #, chat_history
     docs = retriever.get_relevant_documents(query)
     
     formatted_docs = []
@@ -80,8 +80,9 @@ def retrieve_and_format_response(query, retriever, llm, chat_history):
                if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
                But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. \
                In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info Download]({s3_gen_url}) \
-               Context: {combined_content} \
-               Chat History: {chat_history}"
+               Context: {combined_content} "
+    # \
+    #            Chat History: {chat_history}
     
     # Originally there were no message
     message = HumanMessage(content=prompt)
@@ -114,7 +115,7 @@ def upload_to_s3(file, bucket_name, secret_data, key):
 
 
 # Langchain stuff
-llm = ChatOpenAI(model="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY)
+llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
 
 # Initialize the conversation memory
 memory = ConversationBufferMemory()
@@ -162,7 +163,7 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 
-# Create session and key for saving/pushing chat history
+# Create session id and key for saving/pushing chat history
 session_id = str(uuid.uuid4())
 chat_history_key = f"raw-data/chat_history_{session_id}.txt"
 bucket_name = "demo-chat-history-xin"
@@ -170,7 +171,7 @@ bucket_name = "demo-chat-history-xin"
 chat_history_text = save_chat_history(st.session_state["messages"])
 file_obj = io.BytesIO(chat_history_text.encode('utf-8'))
 
-
+# Configure sidebar
 st.sidebar.title("Welcome!")
 st.sidebar.caption("Welcome to Javris, your personal healthcare chatbot! We're here to assist you with all your healthcare needs, \
                    providing accurate and timely information to ensure your well-being.")
@@ -186,6 +187,7 @@ if st.sidebar.button("Help Us Improve"):
 st.sidebar.download_button(label = "Download the Chat", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
 st.sidebar.caption("Author: Xin Wang")
 st.sidebar.caption("LinkedIn: https://www.linkedin.com/in/xin-wang-4522091a9/")
+
 # Display chat messages from history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
@@ -205,7 +207,7 @@ if user_input:
     
     # Generate and display bot response
     with st.spinner("Thinking..."):
-        chat_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state["messages"]])
+        #chat_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state["messages"]])
         bot_response = retrieve_and_format_response(user_input, retriever, llm, chat_history).content
     
     st.session_state["messages"].append({"role": "assistant", "content": bot_response})
