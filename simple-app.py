@@ -186,6 +186,8 @@ if st.sidebar.button("Help Us Improve"):
 st.sidebar.download_button(label = "Download the Chat", data = file_obj, file_name = f"chat_history_{session_id}.txt", mime = "text/plain")
 st.sidebar.caption("Author: Xin Wang")
 st.sidebar.caption("LinkedIn: https://www.linkedin.com/in/xin-wang-4522091a9/")
+
+
 # Display chat messages from history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
